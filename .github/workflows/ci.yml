@@ -30,3 +30,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -f api/Dockerfile -t detecta-api .
+
+  mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - run: npm ci && npm run build -w @detecta/risk-engine
+      - name: Vetores do motor estão atualizados
+        run: npm run vectors -w @detecta/risk-engine && git diff --exit-code mobile/android/app/src/test/resources/engine-vectors.json
+      - run: npm ci
+        working-directory: mobile
+      - run: npx tsc --noEmit && npx jest
+        working-directory: mobile
+      - run: ./gradlew :app:testDebugUnitTest --console=plain
+        working-directory: mobile/android
