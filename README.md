@@ -66,6 +66,20 @@ computador na rede. Depois, escolha o Detecta Golpes como "app de identificaçã
 > **Windows:** se o Gradle falhar com `Unable to establish loopback connection`, o caminho do TEMP está no formato
 > curto (`TIAGO~1.SAN`). Use um TEMP simples antes de rodar: `set TEMP=C:\gtmp` e `set TMP=C:\gtmp`.
 
+## Demonstração web (para apresentações)
+
+`web/` é uma versão de demonstração que roda no navegador, sem emulador, Docker ou internet. Ela mostra um celular
+com o app e um painel do apresentador para simular ligações (falso banco, 0303, número falsificado, banco real,
+contato da agenda, exterior) e o efeito de rede das denúncias. Por baixo roda o mesmo `@detecta/risk-engine` do app,
+então as decisões são idênticas às do Android.
+
+```bash
+npm run build -w @detecta/web
+```
+
+Gera `web/dist/index.html`, um arquivo único (~190 KB) que abre com dois cliques, inclusive de um pendrive.
+Para desenvolver com recarga automática: `npm run demo`.
+
 ## Testes
 
 ```bash

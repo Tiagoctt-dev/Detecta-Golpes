@@ -1,11 +1,16 @@
 {
   "name": "detecta-golpes",
   "private": true,
-  "workspaces": ["packages/*", "api"],
+  "workspaces": [
+    "packages/*",
+    "api",
+    "web"
+  ],
   "scripts": {
-    "build": "npm run build -w @detecta/risk-engine && npm run build -w @detecta/api",
+    "build": "npm run build -w @detecta/risk-engine && npm run build -w @detecta/api && npm run build -w @detecta/web",
     "test": "npm test -w @detecta/risk-engine && npm test -w @detecta/api",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "demo": "npm run dev -w @detecta/web"
   },
   "devDependencies": {
     "typescript": "5.6.3",
