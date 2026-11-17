@@ -1,0 +1,32 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env: { POSTGRES_USER: detecta, POSTGRES_PASSWORD: detecta, POSTGRES_DB: detecta_test }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U detecta" --health-interval 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgres://detecta:detecta@localhost:5432/detecta_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f api/Dockerfile -t detecta-api .

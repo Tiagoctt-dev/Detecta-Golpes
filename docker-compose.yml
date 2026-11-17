@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: detecta
+      POSTGRES_PASSWORD: detecta
+      POSTGRES_DB: detecta
+    ports: ["5433:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./api/docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U detecta"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build: { context: ., dockerfile: api/Dockerfile }
+    environment:
+      DATABASE_URL: postgres://detecta:detecta@db:5432/detecta
+      PORT: 3000
+      DAILY_REPORT_LIMIT: 10
+    ports: ["3000:3000"]
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  pgdata:

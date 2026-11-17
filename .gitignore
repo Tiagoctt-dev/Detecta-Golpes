@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.env
+*.log
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/ios/Pods/
+.claude/settings.local.json
