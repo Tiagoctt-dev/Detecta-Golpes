@@ -43,6 +43,8 @@ object Notifier {
       "silenciar" -> "Chamada silenciada: $number"
       else -> when (level) {
         "baixo" -> "Chamada de $number"
+        // Nível moderado = desconhecido sem histórico: aviso neutro, não alarmante (Confluence, níveis de risco).
+        "moderado" -> "Número desconhecido: $number"
         else -> "Atenção: $number"
       }
     }

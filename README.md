@@ -57,6 +57,12 @@ cd mobile && npm install && npx react-native run-android
 No emulador a API padrão é `http://10.0.2.2:3000`. Em aparelho real, troque em **Ajustes → Servidor** pelo IP do seu
 computador na rede. Depois, escolha o Detecta Golpes como "app de identificação de chamadas e spam" quando o Android pedir.
 
+> **Porta 8081 ocupada** (outro projeto React Native rodando)? Suba o Metro em outra porta e compile apontando para ela:
+> `npx react-native start --port 8088` e `./gradlew :app:assembleDebug -PreactNativeDevServerPort=8088`.
+>
+> **Testar chamadas no emulador:** `adb emu gsm call 11912340001` simula uma ligação recebida;
+> `adb logcat -s DetectaGolpes:I` mostra a decisão e o tempo de cada triagem.
+
 > **Windows:** se o Gradle falhar com `Unable to establish loopback connection`, o caminho do TEMP está no formato
 > curto (`TIAGO~1.SAN`). Use um TEMP simples antes de rodar: `set TEMP=C:\gtmp` e `set TMP=C:\gtmp`.
 
