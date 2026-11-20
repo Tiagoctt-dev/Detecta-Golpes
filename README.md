@@ -6,6 +6,34 @@ em linguagem simples. A classificação é **coletiva**: a denúncia de uma pess
 Os requisitos vêm do Jira (projetos `MVP` e `KAN`) e do Confluence (espaço `DG`); o resumo consolidado está em
 [docs/REQUISITOS.md](docs/REQUISITOS.md).
 
+## Ver a demonstração (comece por aqui)
+
+A forma mais rápida de conhecer o projeto é a **demonstração web**: um celular com o app dentro do navegador e um
+painel do apresentador para simular ligações. Não precisa de emulador, Docker, banco ou internet. Só Node 22+.
+
+```bash
+git clone https://github.com/Tiagoctt-dev/Detecta-Golpes.git
+cd Detecta-Golpes
+npm install
+npm run demo
+```
+
+Abra o endereço que o terminal mostrar (normalmente `http://localhost:5173`). No painel, simule: falso banco, número
+`0303`, número falsificado, banco real, contato da agenda e ligação do exterior, e veja o efeito das denúncias na
+classificação coletiva. A demonstração usa o mesmo motor de risco do app Android, então as decisões são idênticas.
+
+Para gerar um arquivo único que abre com dois cliques (dá para mandar por e-mail ou pendrive):
+
+```bash
+npm run build -w @detecta/web
+```
+
+O resultado fica em `web/dist/index.html`.
+
+> **O produto de verdade é o app mobile** (`mobile/`, Android com triagem nativa em Kotlin, e um projeto iOS inicial),
+> que usa a API em `api/`. A demonstração web é só uma vitrine do comportamento. Para rodar o app e o backend, veja
+> [Rodando](#rodando) mais abaixo.
+
 ## Estrutura
 
 ```
@@ -41,7 +69,7 @@ npm run build
 docker compose up -d
 ```
 
-Isso sobe o PostgreSQL (porta **5433** no host) e a API em `http://localhost:3000`. Para popular números oficiais de
+Isso sobe o PostgreSQL (porta **5433** no host) e a API em `http://localhost:3000`. Para popular números oficiais de Se alguma porta estiver ocupada, use `DB_PORT=5434 API_PORT=3001 docker compose up -d`.
 bancos e a configuração do motor:
 
 ```bash
