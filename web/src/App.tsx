@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LEVEL_LABEL, normalizeNumber, type Analysis, type OriginVerification } from '@detecta/risk-engine';
+import { ActionIcon, LevelIcon } from './icons';
 import { Phone, type Banner, type Ringing } from './phone/Phone';
 import { NETWORK_NUMBER, SCENARIOS, type Scenario } from './scenarios';
 import { analyze, communityReports, formatNumber, initialState, load, recordCall, save, type IncomingCall, type SimState } from './sim';
@@ -92,12 +93,16 @@ export default function App() {
                   <span className="sc-title">{s.title}</span>
                   <span className="sc-who">{s.who}</span>
                   <span className="sc-foot">
-                    <span className={`expect ex-${s.expect === 'Toca' ? 'ok' : s.expect === 'Silencia' ? 'warn' : 'bad'}`}>{s.expect}</span>
+                    <span className={`expect ex-${s.expect === 'Toca' ? 'ok' : s.expect === 'Silencia' ? 'warn' : 'bad'}`}>
+                      <ActionIcon action={s.expect === 'Toca' ? 'permitir' : s.expect === 'Silencia' ? 'silenciar' : 'bloquear'} size={12} />
+                      {s.expect}
+                    </span>
                     <span className="sc-rule">{s.rule}</span>
                   </span>
                 </button>
               ))}
             </div>
+            <p className="sc-legend">Toque num cenário para ver o celular reagir à direita.</p>
             <form className="custom" onSubmit={(e) => { e.preventDefault(); if (custom.trim()) placeCall({ raw: custom, verification: verification || undefined }, custom); }}>
               <label htmlFor="custom-number">Outro número</label>
               <div className="custom-row">
@@ -138,24 +143,25 @@ export default function App() {
             ) : (
               <ol className="log">
                 {log.map((e) => (
-                  <li key={e.key}>
-                    <div className="log-head">
+                  <li key={e.key} className="log-entry">
+                    <div className="log-top">
+                      <span className={`pill lv-bg-${e.analysis.level}`}>
+                        <LevelIcon level={e.analysis.level} size={11} />
+                        {LEVEL_LABEL[e.analysis.level].label}
+                      </span>
                       <span className="log-who">{e.who}</span>
-                      <span className={`pill lv-bg-${e.analysis.level}`}>{LEVEL_LABEL[e.analysis.level].label}</span>
                       <span className="log-dec">{e.analysis.record ? DECISION[e.analysis.action] : 'Contato: não analisado'}</span>
                     </div>
+                    <p className="log-reason">{e.analysis.reason}</p>
                     <div className="log-meta">
                       <span>pontuação <b className="num">{e.analysis.score}</b></span>
                       <span>decidiu em <b className="num">{e.latencyMs < 1 ? '< 1' : e.latencyMs.toFixed(1)} ms</b></span>
+                      {e.analysis.signals.length > 0 && (
+                        <span>
+                          {e.analysis.signals.map((s) => `${SIGNAL_LABEL[s.id] ?? s.id} ${s.weight > 0 ? `+${s.weight}` : s.weight}`).join(' · ')}
+                        </span>
+                      )}
                     </div>
-                    {e.analysis.signals.length > 0 && (
-                      <div className="signals">
-                        {e.analysis.signals.map((s) => (
-                          <span key={s.id} className={s.weight < 0 ? 'sig good' : 'sig'}>{SIGNAL_LABEL[s.id] ?? s.id} <b className="num">{s.weight > 0 ? `+${s.weight}` : s.weight}</b></span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="log-reason">“{e.analysis.reason}”</div>
                   </li>
                 ))}
               </ol>

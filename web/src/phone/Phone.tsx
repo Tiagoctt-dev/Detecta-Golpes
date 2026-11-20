@@ -7,6 +7,9 @@ import {
   analyze, formatNumber, myReport, pendingFeedback, setFeedback, setPersonal,
   type CallRecord, type Feedback, type IncomingCall, type SimState,
 } from '../sim';
+import {
+  ActionIcon, ClockIcon, HomeIcon, LevelIcon, ListIcon, PhoneIcon, PhoneOffIcon, SearchIcon, SettingsIcon, ShieldCheckIcon,
+} from '../icons';
 
 export interface Ringing {
   call: IncomingCall;
@@ -25,8 +28,9 @@ export interface Banner {
 }
 
 type Tab = 'inicio' | 'historico' | 'consultar' | 'listas' | 'ajustes';
-const TABS: Array<[Tab, string]> = [
-  ['inicio', 'Início'], ['historico', 'Histórico'], ['consultar', 'Consultar'], ['listas', 'Listas'], ['ajustes', 'Ajustes'],
+const TABS: Array<[Tab, string, (p: { size?: number }) => JSX.Element]> = [
+  ['inicio', 'Início', HomeIcon], ['historico', 'Histórico', ClockIcon], ['consultar', 'Consultar', SearchIcon],
+  ['listas', 'Listas', ListIcon], ['ajustes', 'Ajustes', SettingsIcon],
 ];
 const ACTION_LABEL = { permitir: 'Tocou', silenciar: 'Silenciada', bloquear: 'Bloqueada' } as const;
 
@@ -53,7 +57,12 @@ export function scamTypeOf(a: Pick<Analysis, 'reason' | 'reasonCode'>): ReportRe
 }
 
 function Badge({ level }: { level: RiskLevel }) {
-  return <span className={`badge lv-${level}`}>{LEVEL_LABEL[level].label}</span>;
+  return (
+    <span className={`badge lv-${level}`}>
+      <LevelIcon level={level} />
+      {LEVEL_LABEL[level].label}
+    </span>
+  );
 }
 
 function when(ms: number) {
@@ -115,8 +124,11 @@ export function Phone({ state, setState, ringing, setRinging, banner, setBanner 
               {tab === 'ajustes' && <Settings state={state} setState={setState} />}
             </div>
             <nav className="tabs">
-              {TABS.map(([id, label]) => (
-                <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)} aria-current={tab === id}>{label}</button>
+              {TABS.map(([id, label, TabIcon]) => (
+                <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)} aria-current={tab === id}>
+                  <TabIcon size={19} />
+                  <span>{label}</span>
+                </button>
               ))}
             </nav>
           </>
@@ -143,7 +155,7 @@ export function Phone({ state, setState, ringing, setRinging, banner, setBanner 
       {banner && (
         <div className={`banner lv-edge-${banner.level}`} key={banner.key} role="status">
           <div className="banner-app">Detecta Golpes · agora</div>
-          <div className="banner-title">{banner.title}</div>
+          <div className="banner-title"><LevelIcon level={banner.level} size={15} /> {banner.title}</div>
           <div className="banner-text">{banner.text}</div>
           <div className="banner-actions">
             {banner.number && <button className="link strong" onClick={() => release(banner.number!, banner.recordId)}>Liberar este número</button>}
@@ -202,7 +214,7 @@ function CallScreen({ ringing, elder, onAnswer, onEnd }: { ringing: Ringing; eld
         {a.number.uf && !call.contactName && <div className="call-sub">Linha registrada em {a.number.uf}</div>}
         {showSeal && (
           <div className={`seal lv-bg-${a.level}`}>
-            <div className="seal-level">{LEVEL_LABEL[a.level].label}</div>
+            <div className="seal-level"><LevelIcon level={a.level} size={14} /> {LEVEL_LABEL[a.level].label}</div>
             <div className="seal-reason">{a.reason}</div>
           </div>
         )}
@@ -211,11 +223,20 @@ function CallScreen({ ringing, elder, onAnswer, onEnd }: { ringing: Ringing; eld
       <div className="call-actions">
         {phase === 'tocando' ? (
           <>
-            <button className="round decline" onClick={onEnd} aria-label="Recusar">Recusar</button>
-            <button className="round answer" onClick={onAnswer} aria-label="Atender">Atender</button>
+            <div className="call-btn-wrap">
+              <button className="round decline" onClick={onEnd} aria-label="Recusar"><PhoneOffIcon size={28} /></button>
+              <span className="call-btn-label">Recusar</span>
+            </div>
+            <div className="call-btn-wrap">
+              <button className="round answer" onClick={onAnswer} aria-label="Atender"><PhoneIcon size={28} /></button>
+              <span className="call-btn-label">Atender</span>
+            </div>
           </>
         ) : (
-          <button className="round decline" onClick={onEnd} aria-label="Desligar">Desligar</button>
+          <div className="call-btn-wrap">
+            <button className="round decline" onClick={onEnd} aria-label="Desligar"><PhoneOffIcon size={28} /></button>
+            <span className="call-btn-label">Desligar</span>
+          </div>
         )}
       </div>
     </div>
@@ -229,7 +250,7 @@ function Home({ state, setState, onOpen }: { state: SimState; setState: (fn: (s:
   return (
     <div className="pad stack">
       <div className="card ok">
-        <h3 className="ok-text">Você está protegido</h3>
+        <h3 className="ok-text"><ShieldCheckIcon size={18} /> Você está protegido</h3>
         <p className="muted">{Object.keys(state.reputations).length} números denunciados na base do aparelho</p>
       </div>
       {pending && (
