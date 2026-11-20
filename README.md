@@ -72,7 +72,7 @@ docker compose up -d
 > Porta ocupada? Use `DB_PORT=5434 API_PORT=3001 docker compose up -d`.
 
 Isso sobe o PostgreSQL (porta **5433** no host) e a API em `http://localhost:3000`. Para popular números oficiais de
-bancos e a configuração do motor::
+bancos e a configuração do motor:
 
 ```bash
 DATABASE_URL=postgres://detecta:detecta@localhost:5433/detecta npm run seed -w @detecta/api
